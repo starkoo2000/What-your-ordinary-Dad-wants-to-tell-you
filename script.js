@@ -1,0 +1,15 @@
+const tracks = [{"title": "그 겨울 속초", "cover": "chapter-1.png", "id": "17PHpW8VzarE_1-P0EctsFKLT4JyEotpa"}, {"title": "보내지 못한 편지", "cover": "chapter-3.png", "id": "1Gb5BMoEofdTL2TlysQRJS8qhs-H6HRT5"}, {"title": "조금씩 어른이 되어가", "cover": "chapter-8.png", "id": "1qH9J0NOYg-vTqMAzWWFzWLV3kM5Nq7t-"}, {"title": "가장 높은 곳과 낮은 곳을 정복한 사나이", "cover": "chapter-4.png", "id": "1G7lqX_a8DGgZ6mfq4bCkbcQ7KDqbzRCL"}, {"title": "선택한 길이 정답이 되도록", "cover": "chapter-5.png", "id": "1t-3MMMzGu8QtZECtM9UoB-VQJaiWZBJB"}, {"title": "하늘로 쏘아올린 작은 성공", "cover": "chapter-2.png", "id": "1JcojN92UFQNCdMycGV5VeGFIgQ_V-7oh"}, {"title": "산 너머 산", "cover": "chapter-12.png", "id": "1Ejg46bFhZmWsbDBHy-cjP83h6fM9KXb2"}, {"title": "지금 이 사람이 내 끝사랑", "cover": "chapter-6.png", "id": "14dLIVaFkivTWcks3rpG5vikw5XcfvnNt"}, {"title": "다시 한번 걸어가", "cover": "chapter-9.png", "id": "1HAs2hmmFhfTlVSVwouevdXtw7bf33V4g"}, {"title": "나의 출사표", "cover": "chapter-10.png", "id": "1hxIL1CLqlHYJgUo8pf_WRJBokcrJQcWe"}, {"title": "특별하게 태어나 평범하게 살아가기", "cover": "chapter-11.png", "id": "1TZvp0g5FFYnfnJar-_P7WlnW-6KyYp7_"}, {"title": "너희에게 해주고 싶은 말", "cover": "chapter-13.png", "id": "1Q0Z_IIHBwrgzZVX-m50bWg8mtu6POY-Y"}];
+let current=0;
+const audio=document.getElementById('album-audio'), title=document.getElementById('now-title'), cover=document.getElementById('now-cover'), count=document.getElementById('now-track'), toggle=document.getElementById('toggle-play');
+function srcFor(i){return `https://drive.usercontent.google.com/download?id=${tracks[i].id}&export=download&confirm=t`;}
+function loadTrack(i, autoplay=false){current=(i+tracks.length)%tracks.length; audio.src=srcFor(current); title.textContent=tracks[current].title; cover.src=tracks[current].cover; cover.alt=tracks[current].title+' 표지'; count.textContent=`TRACK ${String(current+1).padStart(2,'0')} / 12`; if(autoplay){audio.play().catch(()=>{toggle.textContent='▶ 재생';});}}
+function startAlbum(){document.getElementById('album-player').scrollIntoView({behavior:'smooth',block:'start'}); if(!audio.src) loadTrack(current,false); audio.play().then(()=>toggle.textContent='❚❚ 일시정지').catch(()=>toggle.textContent='▶ 재생');}
+document.getElementById('play-all-hero').addEventListener('click',startAlbum);
+toggle.addEventListener('click',()=>{if(audio.paused) startAlbum(); else {audio.pause();toggle.textContent='▶ 계속듣기';}});
+document.getElementById('prev-track').addEventListener('click',()=>loadTrack(current-1,true));
+document.getElementById('next-track').addEventListener('click',()=>loadTrack(current+1,true));
+audio.addEventListener('play',()=>toggle.textContent='❚❚ 일시정지');
+audio.addEventListener('pause',()=>{if(!audio.ended)toggle.textContent='▶ 계속듣기';});
+audio.addEventListener('ended',()=>{if(current<tracks.length-1)loadTrack(current+1,true);else{toggle.textContent='▶ 처음부터';current=0;loadTrack(0,false);}});
+audio.addEventListener('error',()=>{toggle.textContent='재생 오류 · 곡별 듣기 이용';});
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}}));
